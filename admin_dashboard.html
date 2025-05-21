@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Admin Dashboard | Sid Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='admin_dashboard.css') }}">
+    <style>
+        .editable-section {
+            display: none;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin-top: 30px;
+            border-radius: 10px;
+        }
+        .editable-section.active {
+            display: block;
+        }
+        .editable-section h3 {
+            margin-top: 0;
+            color: #333;
+        }
+        textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 5px;
+            border: 1px solid #aaa;
+            resize: vertical;
+        }
+        .editable-section button {
+            background-color: #007BFF;
+            color: white;
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .message {
+            color: green;
+            font-weight: bold;
+        }
+        .sidebar a {
+            cursor: pointer;
+        }
+        hr {
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+<header>
+    <h1>Welcome, Siddhesh Shinde 👋</h1>
+    <p>Manage your portfolio content, updates, and messages here.</p>
+</header>
+
+<div class="dashboard-wrapper">
+    <aside class="sidebar">
+        <nav>
+            <ul>
+                <li><a onclick="showSection('hero')">Update Hero Section</a></li>
+                <li><a onclick="showSection('about')">Update About Section</a></li>
+                <li><a onclick="showSection('projects')">Manage Projects</a></li>
+                <li><a onclick="showSection('resume')">Update Resume</a></li>
+                <li><a onclick="showSection('testimonials')">Manage Testimonials</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <main class="dashboard-content">
+        <div id="hero" class="editable-section active">
+            <h3>Update Hero Section (Homepage Intro)</h3>
+            <form method="POST" action="/admin/update-hero">
+                <label for="hero_title">Title:</label><br>
+                <textarea name="hero_title" rows="2">{{ hero_title }}</textarea><br>
+                <label for="hero_paragraph">Paragraph:</label><br>
+                <textarea name="hero_paragraph" rows="6">{{ hero_paragraph }}</textarea><br>
+                <button type="submit">Save Changes</button>
+            </form>
+            {% with messages = get_flashed_messages(category_filter=['hero']) %}
+                {% if messages %}
+                    <div class="message">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div id="about" class="editable-section">
+            <h3>Update About Section</h3>
+            <form method="POST" action="/admin/update-about">
+                <label for="about_paragraph">About Paragraph:</label><br>
+                <textarea name="about_paragraph" rows="8">{{ about_paragraph }}</textarea><br>
+                <label for="about_skills">Skills (comma separated):</label><br>
+                <textarea name="about_skills" rows="4">{{ about_skills }}</textarea><br>
+                <button type="submit">Save Changes</button>
+            </form>
+            {% with messages = get_flashed_messages(category_filter=['about']) %}
+                {% if messages %}
+                    <div class="message">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div id="projects" class="editable-section">
+            <h3>Manage Projects</h3>
+
+            <div style="margin-bottom: 20px;">
+                <button onclick="toggleProjectSection('add')">Add New Project</button>
+                <button onclick="toggleProjectSection('update')">Update Existing Projects</button>
+            </div>
+
+            <div id="add-project-section">
+                <form method="POST" action="/admin/add-project">
+                    <h4>Add New Project</h4>
+                    <label>Title:</label><br>
+                    <textarea name="title" rows="2" required></textarea><br>
+                    <label>Description:</label><br>
+                    <textarea name="description" rows="3" required></textarea><br>
+                    <label>Image Filename (path in static folder):</label><br>
+                    <textarea name="image_filename" rows="2" required></textarea><br>
+                    <label>GitHub Link:</label><br>
+                    <textarea name="github_link" rows="2"></textarea><br>
+                    <button type="submit">Add Project</button>
+                </form>
+            </div>
+
+            <div id="update-project-section" style="display: none; margin-top: 30px;">
+                <h4>Update Existing Projects</h4>
+                {% for project in projects %}
+                    <form method="POST" action="/admin/update-project">
+                        <input type="hidden" name="project_id" value="{{ project.id }}">
+                        <label>Title:</label><br>
+                        <textarea name="title" rows="2">{{ project.title }}</textarea><br>
+                        <label>Description:</label><br>
+                        <textarea name="description" rows="3">{{ project.description }}</textarea><br>
+                        <label>Image Filename (path in static folder):</label><br>
+                        <textarea name="image_filename" rows="2">{{ project.image_filename }}</textarea><br>
+                        <label>GitHub Link:</label><br>
+                        <textarea name="github_link" rows="2">{{ project.github_link }}</textarea><br>
+                        <button type="submit">Update Project</button>
+                    </form>
+                    <hr>
+                {% endfor %}
+            </div>
+
+
+            {% with messages = get_flashed_messages(category_filter=['project']) %}
+                {% if messages %}
+                    <div class="message">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div id="resume" class="editable-section">
+            <h3>Update Resume (PDF Only)</h3>
+            <form method="POST" action="/admin/update-resume" enctype="multipart/form-data">
+                <label for="resume_file">Upload New Resume (PDF):</label><br>
+                <input type="file" name="resume_file" accept="application/pdf" required><br><br>
+                <button type="submit">Upload Resume</button>
+            </form>
+            {% if resume_info %}
+                <p><strong>Last Uploaded By:</strong> {{ resume_info.uploaded_by }}</p>
+                <p><strong>Last Upload Date:</strong> {{ resume_info.upload_date }}</p>
+                <p><a href="{{ url_for('static', filename='uploads/resume.pdf') }}" target="_blank">View Current Resume</a></p>
+            {% endif %}
+            {% with messages = get_flashed_messages(category_filter=['resume']) %}
+                {% if messages %}
+                    <div class="message">{{ messages[0] }}</div>
+                {% endif %}
+            {% endwith %}
+        </div>
+
+        <div id="testimonials" class="editable-section">
+            <h3>Manage Testimonials</h3>
+            <form method="POST" action="/admin/add-testimonial">
+                <label>Name:</label><br>
+                <textarea name="name" rows="1" required></textarea><br>
+                <label>Message:</label><br>
+                <textarea name="message" rows="3" required></textarea><br>
+                <button type="submit">Add Testimonial</button>
+            </form>
+            <hr>
+            <h4>Existing Testimonials</h4>
+            {% for testimonial in testimonials %}
+                <form method="POST" action="/admin/update-testimonial">
+                    <input type="hidden" name="id" value="{{ testimonial.id }}">
+                    <label>Name:</label><br>
+                    <textarea name="name" rows="1">{{ testimonial.name }}</textarea><br>
+                    <label>Message:</label><br>
+                    <textarea name="message" rows="3">{{ testimonial.message }}</textarea><br>
+                    <button type="submit">Update</button>
+                    <a href="{{ url_for('delete_testimonial', testimonial_id=testimonial.id) }}" onclick="return confirm('Are you sure you want to delete this testimonial?');">Delete</a>
+                </form>
+                <hr>
+            {% endfor %}
+        </div>
+
+    </main>
+</div>
+
+<script>
+    function showSection(sectionId) {
+        const sections = document.querySelectorAll('.editable-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+
+        const activeSection = document.getElementById(sectionId);
+        if (activeSection) {
+            activeSection.classList.add('active');
+        }
+    }
+
+    function toggleProjectSection(mode) {
+        const addSection = document.getElementById('add-project-section');
+        const updateSection = document.getElementById('update-project-section');
+
+        if (mode === 'add') {
+            addSection.style.display = 'block';
+            updateSection.style.display = 'none';
+        } else if (mode === 'update') {
+            addSection.style.display = 'none';
+            updateSection.style.display = 'block';
+        }
+    }
+</script>
+
+</body>
+</html>

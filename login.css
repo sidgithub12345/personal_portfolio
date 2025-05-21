@@ -1,0 +1,98 @@
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body{
+    font-family: 'Times New Roman', Times, serif;
+    background-image: url(media/bg.png);
+    background-size: cover;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.login-container{
+    background-color: #fff;
+    padding: 2rem 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+}
+.login-container h2{
+    margin-bottom: 1.5rem;
+    color: #333;
+}
+.input-group{
+    text-align: left;
+    margin-bottom: 1.2rem;
+}
+.input-group label{
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: 500;
+    color: #333;
+}
+.input-group input{
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1rem;
+    transition: 0.3s ease;
+}
+.input-group input:focus{
+    outline: none;
+    border-color: #0d6efd;
+    box-shadow: 0 0 5px rgba(13, 110, 253, 0.3);
+}
+.login-btn{
+    padding: 0.6rem 1.5rem;
+    background-color: #0d6efd;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s ease;
+    width: 100%;
+}
+.login-btn:hover{
+    background-color: #084298;
+}
+.register-link{
+    margin-top: 1rem;
+    font-size: 0.95rem;
+}
+.register-link a{
+    color: #0d6efd;
+    text-decoration: none;
+}
+.register-link a:hover{
+    text-decoration: underline;
+}
+.flash{
+    padding: 10px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-size: 0.9rem;
+    text-align: center;
+}
+.flash-success{
+    background-color: #d4edda;
+    color: #155724;
+}
+.flash-warning{
+    background-color: #fff3cd;
+    color: #856404;
+}
+.flash-danger{
+    background-color: #f8d7da;
+    color: #721c24;
+}
+.flash-info{
+    background-color: #cce5ff;
+    color: #004085;
+}

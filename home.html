@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home | Sid Portfolio</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1 class="logo">Sid<span>Portfolio</span></h1>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="{{ url_for('home') }}" class="active">Home</a></li>
+                    <li><a href="#about">About</a></li> 
+                    <li><a href="#projects">Projects</a></li> 
+                    <li><a href="#resume">Resume</a></li> 
+                    <li><a href="#contact">Contact</a></li>
+
+                    {% if session.get('loggedin') %}
+                        <li class="user-dropdown">
+                            <span class="user-icon">👤</span>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-name">Hi, {{ session['username'] }}</li>
+                                <li class="dropdown-role">Role: {{ session['role'] }}</li>
+                                <li><a href="{{ url_for('logout') }}">Logout</a></li>
+                            </ul>
+                        </li>
+                    {% else %}
+                        <li><a href="{{ url_for('login') }}">Account</a></li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+
+    <section class="hero">
+        <div class="hero-content">
+            <h2>{{ hero_title }}</h2>
+            <p>{{ hero_paragraph }}</p>
+            <a href="{{ url_for('home') }}#projects" class="btn">Explore My Projects</a>
+        </div>
+    </section>
+
+    <section class="about-section" id="about">
+        <div class="about-container">
+            <div class="about-text">
+                <h2>My Career Journey</h2>
+                <p>{{ about_paragraph | safe }}</p>
+            </div>
+            <div class="about-skills">
+                {% for skill in about_skills %}
+                    <span>{{ skill }}</span>
+                {% endfor %}
+            </div>
+        </div>
+    </section>
+
+    <hr>
+
+    <section class="services-section" id="services">
+        <div class="services-header">
+            <h4>WHAT WE DO</h4>
+            <h2>Services</h2>
+            <p>Top quality services executed by our devoted,<br> yet creative team. We are focused on making you stand out.</p>
+        </div>
+
+        <div class="services-container">
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='media/webdesign.jpg') }}" alt="Web Design">
+                <h3>Web Development</h3>
+                <p>Creating responsive and high-performing websites using HTML, CSS, JavaScript, and Python (Flask).</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='media/cybersecurity.jpg') }}" alt="cyber Security">
+                <h3>Cybersecurity Consulting</h3>
+                <p>Offering guidance on basic security practices, vulnerability testing, and ethical hacking principles.</p>
+            </div>
+
+            <div class="service-card">
+                <img src="{{ url_for('static', filename='media/Technical.jpg') }}" alt="Technical Support">
+                <h3>Technical Support & Training</h3>
+                <p>Helping individuals and small businesses understand and utilize tech tools efficiently and securely.</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="projects" class="projects-section">
+        <h2 class="section-title">My Projects</h2>
+        <div class="projects-container">
+            {% for project in projects %}
+                <div class="project-card">
+                    <img src="{{ url_for('static', filename=project.image_filename) }}" alt="{{ project.title }}">
+                    <h3>{{ project.title }}</h3>
+                    <p>{{ project.description }}</p>
+                    <a href="{{ project.github_link }}" target="_blank" class="btn">View on GitHub</a>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+
+    <section class="resume-section" id="resume">
+        <h2>Download My Resume</h2>
+        <p>Interested in my background, skills, and experience? Click the button below to download my latest resume in PDF format.</p>
+        <a href="{{ url_for('static', filename='uploads/resumes/resume.pdf') }}" download class="download-btn">Download Resume</a>
+    </section>
+
+    <hr>
+
+    <section id="testimonial-section" style="padding: 60px 20px; background-color: #f9f9f9;">
+        <div class="container" style="max-width: 1200px; margin: auto;">
+            <h2 style="text-align: center; margin-bottom: 40px; font-size: 32px;">What People Are Saying</h2>
+            
+            <div class="testimonial-grid" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 30px;">
+                {% for testimonial in testimonials %}
+                <div class="testimonial-card" style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;">
+                    
+                    {% if testimonial.image %}
+                        <img src="{{ url_for('static', filename=testimonial.image) }}" alt="Profile Image" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='default-user.png') }}" alt="Default Image" style="width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-bottom: 15px;">
+                    {% endif %}
+                    
+                    <p style="font-style: italic; color: #555;">"{{ testimonial.message }}"</p>
+                    <h4 style="margin-top: 15px; margin-bottom: 5px; font-size: 18px;">{{ testimonial.name }}</h4>
+                    <p style="color: #999;">{{ testimonial.role }}</p>
+                </div>
+                {% endfor %}
+            </div>
+
+            {% if testimonials|length == 0 %}
+                <p style="text-align: center; color: #999; font-style: italic;">No testimonials yet.</p>
+            {% endif %}
+        </div>
+    </section>
+
+
+    <hr>
+
+    <footer class="footer" id="contact">
+        <div class="footer-columns">
+        
+        <div class="footer-column">
+            <h2 class="footer-logo">Sid<span>Portfolio</span></h2>
+            <p class="footer-text">
+            Subscribe to stay updated with my latest projects, web development insights, and cyber security tips.
+            </p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Office</h3>
+            <p>XYZ Road<br>Mumbai, Maharashtra<br>India - 415608</p>
+            <p><a href="sidshinde@email.com">sidshinde@email.com</a></p>
+            <p>1234567890</p>
+        </div>
+
+        <div class="footer-column">
+            <h3>Links</h3>
+            <ul class="footer-links">
+                <li><a href="home">Home</a></li>
+                <li><a href="#services">Services</a></li>
+                <li><a href="#about">About</a></li>
+                <li><a href="#projects">Projects</a></li>
+                <li><a href="#contact">Contact</a></li>
+            </ul>
+        </div>
+
+        <div class="footer-column">
+            <h3>Newsletter</h3>
+            <form class="newsletter-form">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">→</button>
+            </form>
+            <div class="footer-socials">
+                <a href="#"><img src="https://img.icons8.com/ios-filled/24/000000/facebook-new.png"/></a>
+                <a href="#"><img src="https://img.icons8.com/ios-filled/24/000000/twitter.png"/></a>
+                <a href="#"><img src="https://img.icons8.com/ios-filled/24/000000/linkedin.png"/></a>
+                <a href="#"><img src="https://img.icons8.com/ios-filled/24/000000/github.png"/></a>
+            </div>
+        </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            <p>&copy; Sid Portfolio 2025 — All Rights Reserved</p>
+        </div>
+    </footer>
+</body>
+</html>
